@@ -39,7 +39,7 @@ internal class Cqueue : IEnumerable
         int?[] newItems = new int?[_items.Length * 2];
 
         int startIdx = GetFirstNotNullIndex();
-        int endIdx = GetLastNotNullIndex();
+        int endIdx = _lastPosition;
 
         Array.Copy(_items, startIdx, newItems, 0, endIdx - startIdx);
         return newItems;
@@ -60,16 +60,6 @@ internal class Cqueue : IEnumerable
     private int GetFirstNotNullIndex()
     {
         for (int i = 0; i < _items.Length; i++)
-        {
-            if (_items[i] != null)
-                return i;
-        }
-
-        return -1;
-    }
-    private int GetLastNotNullIndex()
-    {
-        for (int i = _items.Length - 1; i >= 0; i--)
         {
             if (_items[i] != null)
                 return i;
