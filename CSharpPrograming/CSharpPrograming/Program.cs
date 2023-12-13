@@ -12,14 +12,12 @@ internal class Program
             ShortName = "УлГУ",
             Address = "г. Ульяновск, ул. Набережная р. Свияги, д.106"
         };
-        Console.WriteLine(university);
 
         Faculty faculty = new() 
         { 
             Name = "Факультет математики, информационных и авиационных технологий",
             University = university 
         };
-        Console.WriteLine(faculty);
 
         PMGroup group1 = new()
         {
@@ -27,26 +25,22 @@ internal class Program
             CourseNumber = 1,
             Faculty = faculty
         };
-        Console.WriteLine(group1);
 
-        Subgroup subgroup = new()
+        PMGroup group2 = new()
         {
-            SubgroupNumber = 2,
-            Group = group1
+            GroupNumber = "ПМ-О-17/2",
+            CourseNumber = 1,
+            Faculty = faculty
         };
-        Console.WriteLine(subgroup);
 
-        AddRandomStudents(group1, 5);
-        SetGroupLeader(group1, group1.Students.First());
-        group1.PrintStudents();
+        PMGroup group3 = new()
+        {
+            GroupNumber = "ПМ-О-16/1",
+            CourseNumber = 2,
+            Faculty = faculty
+        };
 
-        group1.DistributeStudentsInSubgroups();
-        group1.PrintStudents();
-
-        Console.WriteLine($"Количество студентов в подгруппе {group1.Subgroups.First().SubgroupNumber}: {group1.Subgroups.First().StudentsCount}");
-        Console.WriteLine($"Количество студентов в подгруппе {subgroup.SubgroupNumber}: {subgroup.StudentsCount}");
-
-        TestTransferStudent(faculty, group1);
+        Group.PrintAllObjects();
     }
 
     static void AddRandomStudents(Group group, int number = 1)

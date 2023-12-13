@@ -2,6 +2,9 @@
 
 internal abstract class Group
 {
+    private static Group? _first;
+    private static Group? _last;
+    private Group? _next;
     public required string GroupNumber { get; set; }
     public Student? GroupLeader { get; private set; }
     public required int CourseNumber { get; set; }
@@ -13,6 +16,33 @@ internal abstract class Group
     {
         Subgroups = new List<Subgroup>(1);
         _ = new Subgroup() { SubgroupNumber = 1, Group = this };
+
+        AddGroupToList(this);
+    }
+
+    private static void AddGroupToList(Group group)
+    {
+        if (_first == null)
+        {
+            _first = group;
+            _last = group;
+        }
+        else
+        {
+            _last!._next = group;
+            _last = group;
+        }
+    }
+
+    public static void PrintAllObjects()
+    {
+        Group? current = _first;
+
+        while (current != null)
+        {
+            Console.WriteLine(current.ToString());
+            current = current._next;
+        }
     }
 
     public virtual bool TrySetGroupLeader(Student? student = null)
@@ -33,7 +63,7 @@ internal abstract class Group
         return false;
     }
 
-    public void PrintStudents()
+    public virtual void PrintStudents()
     {
         Console.Write($"{ToString()}: староста {GroupLeader?.Name} (подгруппа {GroupLeader?.Subgroup.SubgroupNumber}); ");
         
@@ -45,7 +75,7 @@ internal abstract class Group
         Console.WriteLine();
     }
 
-    public bool TryExpelStudent(Student student)
+    public virtual bool TryExpelStudent(Student student)
     {
         if (Students.Remove(student))
         {
@@ -58,12 +88,12 @@ internal abstract class Group
         return false;
     }
 
-    public bool CanAcceptStudent(Student student)
+    public virtual bool CanAcceptStudent(Student student)
     {
         return !Students.Contains(student);
     }
 
-    public bool TryAcceptStudent(Student student)
+    public virtual bool TryAcceptStudent(Student student)
     {
         if (Students.Add(student))
         {
@@ -76,7 +106,7 @@ internal abstract class Group
         return false;
     }
 
-    public void DistributeStudentsInSubgroups()
+    public virtual void DistributeStudentsInSubgroups()
     {
         int count = Subgroups.Count;
 
