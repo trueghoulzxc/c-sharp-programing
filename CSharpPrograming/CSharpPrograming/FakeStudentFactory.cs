@@ -1,4 +1,7 @@
-﻿namespace CSharpPrograming;
+﻿using CSharpPrograming.UniversityStructure;
+using System.Reflection.Metadata.Ecma335;
+
+namespace CSharpPrograming;
 
 internal static class FakeStudentFactory
 {
@@ -25,9 +28,10 @@ internal static class FakeStudentFactory
         "Петрова Алиса Егоровна"
     ];
 
-    public static string GetFakeStudent()
+    public static Student AddFakeStudent(Group group)
     {
         int index = new Random().Next(0, _names.Length - 1);
-        return _names[index];
+
+        return new Student(_names[index], group);
     }
 }

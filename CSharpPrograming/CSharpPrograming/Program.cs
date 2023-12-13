@@ -16,37 +16,37 @@ internal class Program
 
         Faculty faculty = new() 
         { 
-            Name = "Факультет математики, информационных и авиационных технологий", 
+            Name = "Факультет математики, информационных и авиационных технологий",
             University = university 
         };
         Console.WriteLine(faculty);
 
-        Group group = new()
+        PMGroup group1 = new()
         {
-            GroupNumber = "ПМ-О-17",
+            GroupNumber = "ПМ-О-17/1",
             CourseNumber = 1,
             Faculty = faculty
         };
-        Console.WriteLine(group);
+        Console.WriteLine(group1);
 
         Subgroup subgroup = new()
         {
-            GroupNumber = "ПМ-О-18",
-            CourseNumber = 1,
-            Faculty = faculty,
-            SubgroupNumber = 2
+            SubgroupNumber = 2,
+            Group = group1
         };
         Console.WriteLine(subgroup);
 
-        AddRandomStudents(group, 5);
-        SetGroupLeader(group, group.Students.First());
-        group.PrintStudents();
-        
-        AddRandomStudents(subgroup, 5);
-        SetGroupLeader(subgroup);
-        subgroup.PrintStudents();
+        AddRandomStudents(group1, 5);
+        SetGroupLeader(group1, group1.Students.First());
+        group1.PrintStudents();
 
-        TestTransferStudent(faculty, group, subgroup);
+        group1.DistributeStudentsInSubgroups();
+        group1.PrintStudents();
+
+        Console.WriteLine($"Количество студентов в подгруппе {group1.Subgroups.First().SubgroupNumber}: {group1.Subgroups.First().StudentsCount}");
+        Console.WriteLine($"Количество студентов в подгруппе {subgroup.SubgroupNumber}: {subgroup.StudentsCount}");
+
+        TestTransferStudent(faculty, group1);
     }
 
     static void AddRandomStudents(Group group, int number = 1)
@@ -55,31 +55,41 @@ internal class Program
         {
             number--;
 
-            string studentName = FakeStudentFactory.GetFakeStudent();
-            _ = group.Faculty.TryAcceptStudent(studentName, group);
+            Student student = FakeStudentFactory.AddFakeStudent(group);
+            _ = group.TryAcceptStudent(student);
         }
     }
 
-    static void SetGroupLeader(Group group, string? groupLeaderName = null)
+    static void SetGroupLeader(Group group, Student? student = null)
     {
-        if (group.TrySetGroupLeader(groupLeaderName))
+        if (group.TrySetGroupLeader(student))
             Console.WriteLine($"{group}: назначен староста {group.GroupLeader}");
         else
             Console.WriteLine($"{group}: не удалось назначить старосту");
     }
 
-    static void TestTransferStudent(Faculty faculty, Group group1, Group group2)
+    static void TestTransferStudent(Faculty faculty, Group group1)
     {
         Console.WriteLine("\n=====Перевод студента=====");
 
-        string testStudent = "Иванов А.Д.";
+        PMGroup group2 = new()
+        {
+            GroupNumber = "ПМ-О-17/2",
+            CourseNumber = 1,
+            Faculty = faculty
+        };
+
+        AddRandomStudents(group2, 5);
+        group2.TrySetGroupLeader();
+
+        Student testStudent = new("Иванов А.Д.", group1);
         faculty.TryAcceptStudent(testStudent, group1);
         
         group1.PrintStudents();
         group2.PrintStudents();
 
-        if (faculty.TryTransferStudent(studentName: testStudent, groupFrom: group1, groupTo: group2))
-            Console.WriteLine($"Студент {testStudent} успешно переведен");
+        if (faculty.TryTransferStudent(student: testStudent, groupFrom: group1, groupTo: group2))
+            Console.WriteLine($"{testStudent} успешно переведен");
         else
             Console.WriteLine($"Не удалось перевести студента {testStudent}");
 

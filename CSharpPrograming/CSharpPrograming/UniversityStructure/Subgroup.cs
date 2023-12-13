@@ -1,10 +1,24 @@
 ﻿namespace CSharpPrograming.UniversityStructure;
 
-internal class Subgroup : Group
+internal class Subgroup
 {
     public required int SubgroupNumber { get; set; }
 
-    public int StudentsCount => Students.Count;
+    public int StudentsCount => 
+        Group.Students
+            .Where(x => x.Subgroup.SubgroupNumber == this.SubgroupNumber)
+            .Count();
 
-    public override string ToString() => $"Группа {GroupNumber}/{SubgroupNumber}";
+    private Group _group = null!;
+    public required Group Group 
+    { 
+        get => _group; 
+        init
+        {
+            _group = value;
+            _group.Subgroups.Add(this);
+        }
+    }
+
+    public override string ToString() => $"Группа {Group}(подгруппа {SubgroupNumber})";
 }
