@@ -1,5 +1,4 @@
 ﻿using CSharpPrograming.UniversityStructure;
-using System.Reflection.Metadata.Ecma335;
 
 namespace CSharpPrograming;
 
