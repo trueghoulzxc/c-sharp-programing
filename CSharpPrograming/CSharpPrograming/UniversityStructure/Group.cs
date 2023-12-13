@@ -36,13 +36,42 @@ internal abstract class Group
 
     public static void PrintAllObjects()
     {
+        foreach (Group group in GetEnumerable())
+        {
+            Console.WriteLine(group.ToString());
+        }
+    }
+
+    /// <summary>
+    /// Возвращает итератор всех созданных групп
+    /// </summary>
+    private static IEnumerable<Group> GetEnumerable()
+    {
         Group? current = _first;
 
         while (current != null)
         {
-            Console.WriteLine(current.ToString());
+            yield return current;
             current = current._next;
         }
+    }
+
+    /// <summary>
+    /// Возвращает количество групп заданного курса
+    /// </summary>
+    /// <param name="course">Номер курса</param>
+    public static int GetGroupsCount(int course)
+    {
+        return GetEnumerable().Where(x => x.CourseNumber == course).Count();
+    }
+
+    /// <summary>
+    /// Возвращает итератор старост всех групп определенного факультета
+    /// </summary>
+    /// <param name="faculty">Факультет</param>
+    public static IEnumerable<Student?> GetGroupLeaders(Faculty faculty)
+    {
+        return GetEnumerable().Where(x => x.Faculty == faculty).Select(x => x.GroupLeader);
     }
 
     public virtual bool TrySetGroupLeader(Student? student = null)

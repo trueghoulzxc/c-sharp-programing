@@ -25,6 +25,8 @@ internal class Program
             CourseNumber = 1,
             Faculty = faculty
         };
+        AddRandomStudents(group1, 5);
+        group1.TrySetGroupLeader();
 
         PMGroup group2 = new()
         {
@@ -32,6 +34,8 @@ internal class Program
             CourseNumber = 1,
             Faculty = faculty
         };
+        AddRandomStudents(group2, 5);
+        group2.TrySetGroupLeader();
 
         PMGroup group3 = new()
         {
@@ -39,8 +43,20 @@ internal class Program
             CourseNumber = 2,
             Faculty = faculty
         };
+        AddRandomStudents(group3, 5);
+        group3.TrySetGroupLeader();
 
         Group.PrintAllObjects();
+
+        Console.WriteLine("Количество групп первого курса: " + Group.GetGroupsCount(1));
+        Console.WriteLine("Количество групп второго курса: " + Group.GetGroupsCount(2));
+
+        Console.Write($"Все старосты факультета {faculty.Name}: ");
+        foreach (Student? groupLeader in Group.GetGroupLeaders(faculty))
+        {
+            if (groupLeader != null)
+                Console.Write(groupLeader.Name + "; ");
+        }
     }
 
     static void AddRandomStudents(Group group, int number = 1)
