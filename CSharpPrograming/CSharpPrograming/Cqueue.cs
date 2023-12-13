@@ -1,21 +1,20 @@
 ﻿using System.Collections;
-using System.Collections.Immutable;
 
 namespace CSharpPrograming;
 
-internal class Cqueue : IEnumerable
+internal class Cqueue<T> : IEnumerable<T>
 {
-    private int?[] _items = new int?[16];
+    private T?[] _items = new T?[16];
     private int _lastPosition = 0;
 
     public Cqueue()
     {
-        Console.WriteLine("Вызван конструктор без параметров");
+        //Console.WriteLine("Вызван конструктор без параметров");
     }
 
-    public Cqueue(IEnumerable<int> items)
+    public Cqueue(IEnumerable<T> items)
     {
-        Console.WriteLine("Вызван конструктор с параметрами");
+        //Console.WriteLine("Вызван конструктор с параметрами");
         
         foreach (var item in items)
         {
@@ -23,7 +22,7 @@ internal class Cqueue : IEnumerable
         }
     }
 
-    public void Add(int newItem)
+    public void Add(T newItem)
     {
         if (_lastPosition + 1 >= _items.Length)
         {
@@ -34,9 +33,9 @@ internal class Cqueue : IEnumerable
         _lastPosition++;
     }
 
-    private int?[] IncreaseCapacity()
+    private T?[] IncreaseCapacity()
     {
-        int?[] newItems = new int?[_items.Length * 2];
+        T?[] newItems = new T?[_items.Length * 2];
 
         int startIdx = GetFirstNotNullIndex();
         int endIdx = _lastPosition;
@@ -45,15 +44,15 @@ internal class Cqueue : IEnumerable
         return newItems;
     }
 
-    public int? Get() 
+    public T? Get() 
     {
         int notNullIdx = GetFirstNotNullIndex();
         
         if (notNullIdx == -1)
-            return null;
+            return default(T?);
 
-        int? res = _items[notNullIdx];
-        _items[notNullIdx] = null;
+        T? res = _items[notNullIdx];
+        _items[notNullIdx] = default(T?);
         return res;
     }
 
@@ -68,18 +67,28 @@ internal class Cqueue : IEnumerable
         return -1;
     }
 
-    public IEnumerator GetEnumerator()
+    public T? FindMax()
     {
-        return _items.Where(x => x != null).GetEnumerator();
+        return _items.Max();
     }
 
-    public static Cqueue operator +(Cqueue queue, int newItem)
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _items.Where(x => x != null && !x.Equals(default(T?))).GetEnumerator()!;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public static Cqueue<T> operator +(Cqueue<T> queue, T newItem)
     {
         queue.Add(newItem);
         return queue;
     }
 
-    public static int? operator -(Cqueue queue)
+    public static T? operator -(Cqueue<T> queue)
     {
         return queue.Get();
     }
@@ -87,18 +96,18 @@ internal class Cqueue : IEnumerable
     /// <summary>
     /// копирование одной очереди в другую с сортировкой в убывающем порядке
     /// </summary>
-    public static Cqueue operator <(Cqueue queue1, Cqueue queue2)
+    public static Cqueue<T> operator <(Cqueue<T> queue1, Cqueue<T> queue2)
     {
         foreach (var item in queue2._items.OrderByDescending(x => x))
         {
             if (item != null)
-                queue1.Add((int)item);
+                queue1.Add(item);
         }
 
         return queue1;
     }
 
-    public static Cqueue operator >(Cqueue queue1, Cqueue queue2)
+    public static Cqueue<T> operator >(Cqueue<T> queue1, Cqueue<T> queue2)
     {
         throw new NotImplementedException();
     }
@@ -106,7 +115,7 @@ internal class Cqueue : IEnumerable
     /// <summary>
     /// Проверка на пустоту очереди. Возвращает true если очередь пустая, иначе false
     /// </summary>
-    public static explicit operator bool(Cqueue queue)
+    public static explicit operator bool(Cqueue<T> queue)
     {
         return queue.GetFirstNotNullIndex() == -1;
     }
@@ -114,7 +123,7 @@ internal class Cqueue : IEnumerable
     /// <summary>
     /// Мощность (количество уникальных элементов)
     /// </summary>
-    public static explicit operator int(Cqueue queue)
+    public static explicit operator int(Cqueue<T> queue)
     {
         return queue._items.Where(x => x != null).Distinct().Count();
     }
