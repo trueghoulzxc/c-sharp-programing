@@ -56,7 +56,7 @@ internal class Cqueue<T> : IEnumerable<T>
     public T? Get() 
     {
         if (_firstPosition == _lastPosition)
-            throw new Exception("Очередь пуста");
+            throw new CqueueException("Очередь пуста");
 
         T? res = _items[_firstPosition];
         _items[_firstPosition] = default;
@@ -98,7 +98,7 @@ internal class Cqueue<T> : IEnumerable<T>
 
         try
         {
-            JsonSerializer.Serialize(fileStream, _items, options);
+            JsonSerializer.Serialize(fileStream, this.ToArray(), options);
         }
         catch (Exception ex)
         {
@@ -125,8 +125,10 @@ internal class Cqueue<T> : IEnumerable<T>
 
         if (newItems == null)
             throw new LoadCqueueException("Ошибка при десериализации очереди");
-        else
-            _items = newItems;
+
+        _items = newItems;
+        _firstPosition = 0;
+        _lastPosition = newItems.Length;
     }
 
     public IEnumerator<T> GetEnumerator()

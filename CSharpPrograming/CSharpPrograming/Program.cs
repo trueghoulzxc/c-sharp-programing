@@ -6,18 +6,47 @@ namespace CSharpPrograming
     {
         static void Main(string[] args)
         {
+            SuccessCase();
+            Console.WriteLine("==========");
+            ExceptionHandlingTest();
+        }
+
+        static void SuccessCase()
+        {
             Directory.CreateDirectory(@"C:/queues");
 
             Console.WriteLine("Очередь char");
             Cqueue<char> charQ1 = ['a', 'b', 'c', 'd'];
+            PrintCqueue(charQ1);
             SaveCqueue(charQ1, @"C:/queues/charQ.json");
             Cqueue<char> charQ2 = LoadCqueue<char>(@"C:/queues/charQ.json");
-
+            PrintCqueue(charQ2);
 
             Console.WriteLine("\nОчередь MyDate");
             Cqueue<MyDate> dateQ1 = [new(11, 12, 2023), new(12, 12, 2023), new(13, 12, 2023)];
+            PrintCqueue(dateQ1);
             SaveCqueue(dateQ1, @"C:/queues/dateQ.json");
             Cqueue<MyDate> dateQ2 = LoadCqueue<MyDate>(@"C:/queues/dateQ.json");
+            PrintCqueue(dateQ2);
+        }
+
+        static void ExceptionHandlingTest()
+        {
+            Console.WriteLine("Сохранение в несуществующую директорию");
+            Cqueue<char> charQ1 = ['a', 'b', 'c', 'd'];
+            SaveCqueue(charQ1, @"C:/queues1/charQ.json");
+
+            Console.WriteLine("Загрузка из несуществующего файла");
+            _ = LoadCqueue<char>(@"C:/charQ.json");
+
+            Console.WriteLine("Вызов загрузки без указания файла");
+            _ = LoadCqueue<char>(null!);
+
+            Console.WriteLine("Попытка загрузить очередь другого типа данных");
+            _ = LoadCqueue<char>(@"C:/queues/dateQ.json");
+
+            Console.WriteLine("Попытка загрузить очередь из файла с невалидным json");
+            Cqueue<MyDate> charQ2 = LoadCqueue<MyDate>(@"C:/queues/dateQ с невалидными данными.json");
         }
 
         static void SaveCqueue<T>(Cqueue<T> q, string filePath)
@@ -100,7 +129,7 @@ namespace CSharpPrograming
             {
                 Console.Write(item + "; ");
             }
-            Console.Write("\n\n");
+            Console.WriteLine();
         }
 
         static void TestQueue<T>(Cqueue<T> q1, Cqueue<T> q2, T newItem)
