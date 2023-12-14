@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿using CSharpPrograming.Exceptions;
+using System.Collections;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 
 namespace CSharpPrograming;
 
@@ -70,6 +74,52 @@ internal class Cqueue<T> : IEnumerable<T>
     public T? FindMax()
     {
         return _items.Max();
+    }
+
+    public void SaveToFile(string filePath)
+    {
+        if (filePath == null)
+            throw new ArgumentNullException(nameof(filePath));
+
+        using FileStream fileStream = new(filePath, FileMode.Create);
+
+        var options = new JsonSerializerOptions
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+            WriteIndented = true
+        };
+
+        try
+        {
+            JsonSerializer.Serialize(fileStream, _items, options);
+        }
+        catch (Exception ex)
+        {
+            throw new SaveCqueueException("Ошибка при сохранении очереди", ex);
+        }
+    }
+
+    public void LoadFromFile(string filePath)
+    {
+        if (filePath == null)
+            throw new ArgumentNullException(nameof(filePath));
+
+        using FileStream fileStream = new(filePath, FileMode.Open);
+
+        T?[]? newItems;
+        try
+        {
+            newItems = JsonSerializer.Deserialize<T?[]>(fileStream);
+        }
+        catch (Exception ex)
+        {
+            throw new LoadCqueueException("Ошибка при загрузке очереди", ex);
+        }
+
+        if (newItems == null)
+            throw new LoadCqueueException("Ошибка при десериализации очереди");
+        else
+            _items = newItems;
     }
 
     public IEnumerator<T> GetEnumerator()

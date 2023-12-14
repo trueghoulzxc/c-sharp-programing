@@ -1,23 +1,96 @@
-﻿namespace CSharpPrograming
+﻿using CSharpPrograming.Exceptions;
+
+namespace CSharpPrograming
 {
     internal class Program
     {
         static void Main(string[] args)
         {
+            Directory.CreateDirectory(@"C:/queues");
+
             Console.WriteLine("Очередь char");
-            Cqueue<char> charQ1 = ['a', 'b', 'c', 'd', 'e', 'f'];
-            Cqueue<char> charQ2 = ['q', 'r', 's', 't', 'u', 'v'];
-            TestQueue(charQ1, charQ2, 'z');
+            Cqueue<char> charQ1 = ['a', 'b', 'c', 'd'];
+            SaveCqueue(charQ1, @"C:/queues/charQ.json");
+            Cqueue<char> charQ2 = LoadCqueue<char>(@"C:/queues/charQ.json");
+
 
             Console.WriteLine("\nОчередь MyDate");
-            Cqueue<MyDate> dateQ1 = [new(11, 12, 2023), new(12, 12, 2023), new(13, 12, 2023)]; 
-            Cqueue<MyDate> dateQ2 = [new(11, 01, 2023), new(12, 01, 2023), new(13, 01, 2023)];
-            TestQueue(dateQ1, dateQ2, new(31, 12, 2023));
+            Cqueue<MyDate> dateQ1 = [new(11, 12, 2023), new(12, 12, 2023), new(13, 12, 2023)];
+            SaveCqueue(dateQ1, @"C:/queues/dateQ.json");
+            Cqueue<MyDate> dateQ2 = LoadCqueue<MyDate>(@"C:/queues/dateQ.json");
+        }
 
-            Console.WriteLine();
-            TestFindMax(new Cqueue<int> { 1, 3, 4, 2, 6, 2 });
-            Console.WriteLine();
-            TestFindMax(new Cqueue<double> { 1.6, 3.22, 4.20, 8.8, 2.28 });
+        static void SaveCqueue<T>(Cqueue<T> q, string filePath)
+        {
+            string mainExceptionMessage = "Ошибка при сохранении очереди";
+
+            try
+            {
+                q.SaveToFile(filePath);
+                Console.WriteLine("Очередь успешно сохранена в файл " + filePath);
+            }
+            catch(DirectoryNotFoundException ex)
+            {
+                Console.WriteLine(mainExceptionMessage + ": Не найдена директория " + filePath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine(mainExceptionMessage + ": Не найден файл " + filePath);
+            }
+            catch (SaveCqueueException ex)
+            {
+                string? innerExceptionMessage = ex.InnerException?.Message;
+                if (innerExceptionMessage != null)
+                    innerExceptionMessage = ": " + innerExceptionMessage;
+
+                Console.WriteLine(mainExceptionMessage + ": " + ex.Message + innerExceptionMessage);
+            }
+            catch (CqueueException ex)
+            {
+                Console.WriteLine(mainExceptionMessage + (ex.Message != null ? ex.Message : ": неизвестная ошибка при работе с очередью"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        static Cqueue<T> LoadCqueue<T>(string filePath)
+        {
+            string mainExceptionMessage = "Ошибка при загрузке очереди";
+            Cqueue<T> q = new();
+
+            try
+            {                
+                q.LoadFromFile(filePath);
+                Console.WriteLine("Очередь успешно загружена из файла " + filePath);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                Console.WriteLine(mainExceptionMessage + ": Не найдена директория " + filePath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine(mainExceptionMessage + ": Не найден файл " + filePath);
+            }
+            catch (LoadCqueueException ex)
+            {
+                string? innerExceptionMessage = ex.InnerException?.Message;
+                if (innerExceptionMessage != null)
+                    innerExceptionMessage = ": " + innerExceptionMessage;
+
+                Console.WriteLine(mainExceptionMessage + ": " + ex.Message + innerExceptionMessage);
+            }
+            catch (CqueueException ex)
+            {
+                Console.WriteLine(mainExceptionMessage + (ex.Message != null ? ex.Message : ": неизвестная ошибка при работе с очередью"));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return q;
         }
 
         static void PrintCqueue<T>(Cqueue<T> queue)
