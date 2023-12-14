@@ -6,6 +6,7 @@ internal class Cqueue<T> : IEnumerable<T>
 {
     private T?[] _items = new T?[16];
     private int _lastPosition = 0;
+    private int _firstPosition = 0;
 
     public Cqueue()
     {
@@ -37,34 +38,40 @@ internal class Cqueue<T> : IEnumerable<T>
     {
         T?[] newItems = new T?[_items.Length * 2];
 
-        int startIdx = GetFirstNotNullIndex();
+        int startIdx = _firstPosition;
         int endIdx = _lastPosition;
 
         Array.Copy(_items, startIdx, newItems, 0, endIdx - startIdx);
+
+        _firstPosition = 0;
+        _lastPosition = endIdx - startIdx;
+
         return newItems;
     }
 
     public T? Get() 
     {
-        int notNullIdx = GetFirstNotNullIndex();
-        
-        if (notNullIdx == -1)
-            return default(T?);
+        if (_firstPosition == _lastPosition)
+            throw new Exception("Очередь пуста");
 
-        T? res = _items[notNullIdx];
-        _items[notNullIdx] = default(T?);
+        T? res = _items[_firstPosition];
+        _items[_firstPosition] = default;
+        _firstPosition++;
         return res;
     }
 
-    private int GetFirstNotNullIndex()
+    public bool TryGet(out T? value)
     {
-        for (int i = 0; i < _items.Length; i++)
+        if (_firstPosition == _lastPosition)
         {
-            if (_items[i] != null)
-                return i;
-        }
+            value = default;
+            return false;
+        }   
 
-        return -1;
+        value = _items[_firstPosition];
+        _items[_firstPosition] = default;
+        _firstPosition++;
+        return true;
     }
 
     public T? FindMax()
@@ -74,7 +81,7 @@ internal class Cqueue<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        return _items.Where(x => x != null && !x.Equals(default(T?))).GetEnumerator()!;
+        return _items.Skip(_firstPosition).SkipLast(_items.Length - _lastPosition).GetEnumerator()!;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -98,7 +105,7 @@ internal class Cqueue<T> : IEnumerable<T>
     /// </summary>
     public static Cqueue<T> operator <(Cqueue<T> queue1, Cqueue<T> queue2)
     {
-        foreach (var item in queue2._items.OrderByDescending(x => x))
+        foreach (var item in queue2.OrderByDescending(x => x))
         {
             if (item != null)
                 queue1.Add(item);
@@ -117,7 +124,7 @@ internal class Cqueue<T> : IEnumerable<T>
     /// </summary>
     public static explicit operator bool(Cqueue<T> queue)
     {
-        return queue.GetFirstNotNullIndex() == -1;
+        return queue._firstPosition == queue._lastPosition;
     }
 
     /// <summary>
