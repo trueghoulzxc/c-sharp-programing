@@ -116,6 +116,11 @@ namespace CSharpPrograming
             Console.WriteLine("Получен элемент " + item);
             PrintCqueue(q1);
 
+            Console.WriteLine("Получение еще одного элемента");
+            T? item2 = -q1;
+            Console.WriteLine("Получен элемент " + item2);
+            PrintCqueue(q1);
+
             Console.WriteLine("Копирование одной очереди в другую с сортировкой в убывающем порядке");
             q1 = q1 < q2;
             PrintCqueue(q1);
@@ -123,6 +128,15 @@ namespace CSharpPrograming
             Console.WriteLine("Проверка пустая ли очередь: " + (bool)q1);
             Console.WriteLine("Мощность: " + (int)q1);
             Console.WriteLine("Максимальный элемент: " + q1.FindMax());
+
+            Console.WriteLine("Делаем очередь пустой");
+            int count = q1.Count();
+            while (count > 0)
+            {
+                count--;
+                Console.WriteLine(q1.Get());
+            }
+            Console.WriteLine("Проверка пустая ли очередь: " + (bool)q1);
         }
 
         static void TestFindMax<T>(Cqueue<T> q)
