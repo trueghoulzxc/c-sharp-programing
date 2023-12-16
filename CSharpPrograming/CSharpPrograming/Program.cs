@@ -1,4 +1,6 @@
 ﻿using CSharpPrograming.UniversityStructure;
+using CSharpPrograming.UniversityStructure.Faculties;
+using CSharpPrograming.UniversityStructure.Interfaces;
 
 namespace CSharpPrograming;
 
@@ -6,57 +8,58 @@ internal class Program
 {
     static void Main()
     {
+        List<ICollectible> list = new();
+        
         University university = new() 
         { 
             Name = "Ульяновский государственный университет",
             ShortName = "УлГУ",
             Address = "г. Ульяновск, ул. Набережная р. Свияги, д.106"
         };
+        list.Add(university);
 
-        Faculty faculty = new() 
-        { 
-            Name = "Факультет математики, информационных и авиационных технологий",
-            University = university 
-        };
 
-        PMGroup group1 = new()
+        FMIATFaculty fmiatFaculty = new(university);
+        list.Add(fmiatFaculty);
+
+        IDiPFaculty idipFaculty = new(university);
+        list.Add(idipFaculty);
+
+        PMGroup group1 = new(fmiatFaculty)
         {
             GroupNumber = "ПМ-О-17/1",
-            CourseNumber = 1,
-            Faculty = faculty
+            CourseNumber = 1
         };
+        list.Add(group1);
         AddRandomStudents(group1, 5);
         group1.TrySetGroupLeader();
 
-        PMGroup group2 = new()
+        PMGroup group2 = new(fmiatFaculty)
         {
             GroupNumber = "ПМ-О-17/2",
-            CourseNumber = 1,
-            Faculty = faculty
+            CourseNumber = 1
         };
+        list.Add(group2);
         AddRandomStudents(group2, 5);
         group2.TrySetGroupLeader();
 
-        PMGroup group3 = new()
+        Console.WriteLine("Созданные объекты:");
+        foreach (var item in list)
         {
-            GroupNumber = "ПМ-О-16/1",
-            CourseNumber = 2,
-            Faculty = faculty
-        };
-        AddRandomStudents(group3, 5);
-        group3.TrySetGroupLeader();
-
-        Group.PrintAllObjects();
-
-        Console.WriteLine("Количество групп первого курса: " + Group.GetGroupsCount(1));
-        Console.WriteLine("Количество групп второго курса: " + Group.GetGroupsCount(2));
-
-        Console.Write($"Все старосты факультета {faculty.Name}: ");
-        foreach (Student? groupLeader in Group.GetGroupLeaders(faculty))
-        {
-            if (groupLeader != null)
-                Console.Write(groupLeader.Name + "; ");
+            Console.WriteLine(item + "; ");
         }
+        Console.WriteLine();
+
+        Student testStudent = new Student("Петров И.А.", group1);
+        group1.TryAcceptStudent(testStudent);
+
+        SetPMGroupLeader(group1, "Петров"); 
+        SetPMGroupLeader(group1, "Святослав"); 
+        SetPMGroupLeader(group1, "");
+
+        GetStudent(university, "Петров");
+        GetStudent(university, "Святослав");
+        GetStudent(university, "");
     }
 
     static void AddRandomStudents(Group group, int number = 1)
@@ -66,7 +69,6 @@ internal class Program
             number--;
 
             Student student = FakeStudentFactory.AddFakeStudent(group);
-            _ = group.TryAcceptStudent(student);
         }
     }
 
@@ -78,15 +80,43 @@ internal class Program
             Console.WriteLine($"{group}: не удалось назначить старосту");
     }
 
+    static void SetPMGroupLeader(PMGroup group, string studentName)
+    {
+        Console.WriteLine("Назначение старостой группы ПМ студента " + studentName);
+
+        try
+        {
+            group.SetGroupLeader(studentName);
+            Console.WriteLine($"{group.GroupLeader} успешно назначен старостой");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
+        Console.WriteLine();
+    }
+
+    static void GetStudent(University university, string studentName)
+    {
+        Console.WriteLine("Поиск студента в университете по имени " + studentName);
+
+        if (university.TryGetStudentByName(studentName, out Student? student))
+            Console.WriteLine(student + " найден");
+        else
+            Console.WriteLine("Студент не найден");
+
+        Console.WriteLine();
+    }
+
     static void TestTransferStudent(Faculty faculty, Group group1)
     {
         Console.WriteLine("\n=====Перевод студента=====");
 
-        PMGroup group2 = new()
+        PMGroup group2 = new(faculty)
         {
             GroupNumber = "ПМ-О-17/2",
-            CourseNumber = 1,
-            Faculty = faculty
+            CourseNumber = 1
         };
 
         AddRandomStudents(group2, 5);
@@ -94,7 +124,7 @@ internal class Program
 
         Student testStudent = new("Иванов А.Д.", group1);
         faculty.TryAcceptStudent(testStudent, group1);
-        
+
         group1.PrintStudents();
         group2.PrintStudents();
 

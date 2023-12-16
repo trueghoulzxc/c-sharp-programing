@@ -1,6 +1,8 @@
-﻿namespace CSharpPrograming.UniversityStructure;
+﻿using CSharpPrograming.UniversityStructure.Interfaces;
 
-internal class Subgroup
+namespace CSharpPrograming.UniversityStructure;
+
+internal class Subgroup : ICollectible
 {
     public required int SubgroupNumber { get; set; }
 

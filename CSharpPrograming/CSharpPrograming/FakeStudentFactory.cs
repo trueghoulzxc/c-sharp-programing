@@ -31,6 +31,8 @@ internal static class FakeStudentFactory
     {
         int index = new Random().Next(0, _names.Length - 1);
 
-        return new Student(_names[index], group);
+        var student = new Student(_names[index], group);
+        _ = group.TryAcceptStudent(student);
+        return student;
     }
 }

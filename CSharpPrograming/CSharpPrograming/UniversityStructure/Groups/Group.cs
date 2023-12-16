@@ -1,21 +1,26 @@
-﻿namespace CSharpPrograming.UniversityStructure;
+﻿using CSharpPrograming.UniversityStructure.Interfaces;
 
-internal abstract class Group
+namespace CSharpPrograming.UniversityStructure;
+
+internal abstract class Group : ICollectible
 {
     private static Group? _first;
     private static Group? _last;
     private Group? _next;
     public required string GroupNumber { get; set; }
-    public Student? GroupLeader { get; private set; }
+    public Student? GroupLeader { get; protected set; }
     public required int CourseNumber { get; set; }
-    public required Faculty Faculty { get; init; }
+    public Faculty Faculty { get; init; }
     public HashSet<Student> Students { get; } = new();
     public List<Subgroup> Subgroups { get; init; }
 
-    public Group()
+    public Group(Faculty faculty)
     {
         Subgroups = new List<Subgroup>(1);
         _ = new Subgroup() { SubgroupNumber = 1, Group = this };
+
+        Faculty = faculty;
+        faculty.Groups.Add(this);
 
         AddGroupToList(this);
     }

@@ -1,9 +1,18 @@
-﻿namespace CSharpPrograming.UniversityStructure;
+﻿using CSharpPrograming.UniversityStructure.Interfaces;
 
-internal class Faculty
+namespace CSharpPrograming.UniversityStructure;
+
+internal abstract class Faculty : ICollectible
 {
-    public required string Name { get; set; }
-    public required University University { get; init; }
+    public virtual string Name { get; init; } = null!;
+    public University University { get; init; }
+    public List<Group> Groups { get; } = new List<Group>();
+
+    public Faculty(University university)
+    {
+        University = university;
+        university.Faculties.Add(this);
+    }
 
     public bool TryAcceptStudent(Student student, Group group) 
     {
