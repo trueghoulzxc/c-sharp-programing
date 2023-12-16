@@ -12,16 +12,30 @@ internal class Cqueue<T> : IEnumerable<T>
     private int _lastPosition = 0;
     private int _firstPosition = 0;
 
+    public T? this[int index]
+    {
+        get { return _items[index]; }
+        set { _items[index] = value; }
+    }
+
     public Cqueue()
     {
         //Console.WriteLine("Вызван конструктор без параметров");
     }
 
-    public Cqueue(IEnumerable<T> items)
+    public Cqueue(IEnumerable<object> items)
     {
         //Console.WriteLine("Вызван конструктор с параметрами");
         
-        foreach (var item in items)
+        if (items == null)
+            throw new ArgumentNullException(nameof(items));
+
+        if (items is not IEnumerable<T>)
+            throw new ArgumentException(nameof(items));
+
+        var itemsT = items as IEnumerable<T>;
+
+        foreach (var item in itemsT!)
         {
             this.Add(item);
         }
@@ -166,9 +180,18 @@ internal class Cqueue<T> : IEnumerable<T>
         return queue1;
     }
 
+    /// <summary>
+    /// копирование одной очереди в другую с сортировкой в возрастающем порядке 
+    /// </summary>
     public static Cqueue<T> operator >(Cqueue<T> queue1, Cqueue<T> queue2)
     {
-        throw new NotImplementedException();
+        foreach (var item in queue2.OrderBy(x => x))
+        {
+            if (item != null)
+                queue1.Add(item);
+        }
+
+        return queue1;
     }
 
     /// <summary>

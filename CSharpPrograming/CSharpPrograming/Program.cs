@@ -6,9 +6,15 @@ namespace CSharpPrograming
     {
         static void Main(string[] args)
         {
-            SuccessCase();
-            Console.WriteLine("==========");
-            ExceptionHandlingTest();
+            Console.WriteLine("Очередь char");
+            Cqueue<char> charQ1 = ['a', 'b', 'c', 'd', 'e', 'f'];
+            Cqueue<char> charQ2 = ['q', 'r', 's', 't', 'u', 'v'];
+            TestQueue(charQ1, charQ2, 'z');
+
+            Console.WriteLine("\nОчередь MyDate");
+            Cqueue<MyDate> dateQ1 = [new(11, 12, 2023), new(12, 12, 2023), new(13, 12, 2023)];
+            Cqueue<MyDate> dateQ2 = [new(11, 01, 2023), new(12, 01, 2023), new(13, 01, 2023)];
+            TestQueue(dateQ1, dateQ2, new(31, 12, 2023));
         }
 
         static void SuccessCase()
@@ -146,26 +152,32 @@ namespace CSharpPrograming
             PrintCqueue(q1);
 
             Console.WriteLine("Получение еще одного элемента");
-            T? item2 = -q1;
-            Console.WriteLine("Получен элемент " + item2);
+            if (q1.TryGet(out T? item2))
+                Console.WriteLine("Получен элемент " + item2);
+            else
+                Console.WriteLine("Не удалось получить элемент");
             PrintCqueue(q1);
 
             Console.WriteLine("Копирование одной очереди в другую с сортировкой в убывающем порядке");
             q1 = q1 < q2;
             PrintCqueue(q1);
 
+            Console.WriteLine("Копирование одной очереди в другую с сортировкой в возрастающем порядке порядке");
+            q1 = q1 > q2;
+            PrintCqueue(q1);
+
             Console.WriteLine("Проверка пустая ли очередь: " + (bool)q1);
             Console.WriteLine("Мощность: " + (int)q1);
             Console.WriteLine("Максимальный элемент: " + q1.FindMax());
 
-            Console.WriteLine("Делаем очередь пустой");
-            int count = q1.Count();
-            while (count > 0)
-            {
-                count--;
-                Console.WriteLine(q1.Get());
-            }
-            Console.WriteLine("Проверка пустая ли очередь: " + (bool)q1);
+            //Console.WriteLine("Делаем очередь пустой");
+            //int count = q1.Count();
+            //while (count > 0)
+            //{
+            //    count--;
+            //    Console.WriteLine(q1.Get());
+            //}
+            //Console.WriteLine("Проверка пустая ли очередь: " + (bool)q1);
         }
 
         static void TestFindMax<T>(Cqueue<T> q)
