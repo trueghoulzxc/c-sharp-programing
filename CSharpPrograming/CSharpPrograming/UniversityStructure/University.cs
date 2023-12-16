@@ -21,7 +21,6 @@ internal class University : ICollectible
         return Faculties
             .SelectMany(x => x.Groups)
             .SelectMany(x => x.Students)
-            .Where(x => x.Name == name)
             .First(x => x.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
     }
 

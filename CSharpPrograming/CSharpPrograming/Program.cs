@@ -1,5 +1,4 @@
 ﻿using CSharpPrograming.UniversityStructure;
-using CSharpPrograming.UniversityStructure.Faculties;
 using CSharpPrograming.UniversityStructure.Interfaces;
 
 namespace CSharpPrograming;

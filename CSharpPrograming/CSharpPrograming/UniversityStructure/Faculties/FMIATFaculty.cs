@@ -1,4 +1,4 @@
-﻿namespace CSharpPrograming.UniversityStructure.Faculties;
+﻿namespace CSharpPrograming.UniversityStructure;
 
 internal sealed class FMIATFaculty : Faculty
 {
